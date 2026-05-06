@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { ShoppingCart, SlidersHorizontal, ChevronDown, ArrowRight, Search, X } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -35,17 +35,17 @@ const sortOptions = [
   { label: "Novedades", value: "new" },
 ];
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } },
 };
 
-const stagger = {
+const stagger: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.07 } },
 };
 
-const cardVariant = {
+const cardVariant: Variants = {
   hidden: { opacity: 0, y: 24, scale: 0.97 },
   show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
   exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } },
@@ -67,7 +67,6 @@ function GridSkeleton() {
     <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
       {Array.from({ length: 8 }).map((_, i) => (
         <div key={i} className="animate-pulse">
-          {/* FIX: altura reducida en mobile */}
           <div className="h-[190px] w-full rounded-xl bg-black/8 sm:h-[260px] md:h-[320px]" />
           <div className="mt-3 space-y-2 px-1">
             <div className="h-2 w-16 rounded-full bg-black/8" />
@@ -110,7 +109,6 @@ function ProductosContent() {
     async function fetchProducts() {
       try {
         setLoading(true);
-        // FIX: era /api/Products (P mayúscula), unificado con el resto del proyecto
         const res = await fetch(`${API_URL}/api/products`);
         if (!res.ok) throw new Error();
         const data: Product[] = await res.json();
@@ -170,9 +168,8 @@ function ProductosContent() {
   return (
     <main className="min-h-screen bg-white">
 
-      {/* ── HEADER ─────────────────────────────────────────────────────── */}
-      {/* FIX: pt-34 no existe en Tailwind → pt-28 mobile, md:pt-36 desktop */}
-     <section className="bg-[#111] px-6 pb-12 pt-40 md:px-10 md:pb-20 md:pt-36">
+      {/* ── HEADER ── */}
+      <section className="bg-[#111] px-6 pb-12 pt-40 md:px-10 md:pb-20 md:pt-36">
         <div className="mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -183,7 +180,6 @@ function ProductosContent() {
               <div className="h-px w-6 bg-white/40" />
               <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/50">Tienda</span>
             </div>
-            {/* FIX: text-4xl en mobile (era text-5xl) */}
             <h1 className="text-4xl font-black uppercase leading-none text-white md:text-6xl">
               {activeCategory === "Todos" ? "Productos" : activeCategory}
             </h1>
@@ -196,7 +192,7 @@ function ProductosContent() {
         </div>
       </section>
 
-      {/* ── FILTROS + GRID ──────────────────────────────────────────────── */}
+      {/* ── FILTROS + GRID ── */}
       <section className="px-6 py-8 md:px-10 md:py-14">
         <div className="mx-auto max-w-7xl">
 
@@ -225,14 +221,13 @@ function ProductosContent() {
             )}
           </motion.div>
 
-          {/* Filtros — categorías arriba, sort abajo en mobile */}
+          {/* Filtros */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             className="mb-7 flex flex-col gap-3 md:mb-8 md:flex-row md:items-center md:justify-between md:gap-4"
           >
-            {/* Categorías + Ofertas */}
             <div className="flex flex-wrap items-center gap-2">
               {categories.map((cat) => (
                 <button
@@ -259,7 +254,7 @@ function ProductosContent() {
               </button>
             </div>
 
-            {/* Sort — se alinea a la derecha en desktop, al inicio en mobile */}
+            {/* Sort */}
             <div className="relative self-start md:self-auto">
               <button
                 onClick={() => setSortOpen((v) => !v)}
@@ -337,9 +332,7 @@ function ProductosContent() {
                   {filtered.map((product) => (
                     <motion.article key={product.id} variants={cardVariant} className="group">
                       <Link href={`/productos/${product.id}`} className="block">
-
                         <div className="relative overflow-hidden rounded-xl bg-[#e8e8e8]">
-                          {/* FIX: altura reducida en mobile */}
                           <div className="relative h-[190px] w-full sm:h-[260px] md:h-[320px]">
                             <Image
                               src={product.images[0]}
@@ -349,14 +342,11 @@ function ProductosContent() {
                               className="object-cover transition duration-500 group-hover:scale-105"
                             />
                           </div>
-
                           {product.tag && (
                             <div className={`absolute left-2 top-2 rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider sm:left-3 sm:top-3 sm:px-3 sm:text-[10px] ${tagColor(product.tag)}`}>
                               {product.tag}
                             </div>
                           )}
-
-                          {/* FIX: en mobile el botón siempre visible (hover no funciona en touch) */}
                           <div className="absolute bottom-0 left-0 right-0 sm:translate-y-full sm:transition sm:duration-300 sm:group-hover:translate-y-0">
                             <button
                               onClick={(e) => handleAddToCart(e, product)}
@@ -369,8 +359,6 @@ function ProductosContent() {
                             </button>
                           </div>
                         </div>
-
-                        {/* Info */}
                         <div className="mt-2 px-0.5 md:mt-3 md:px-1">
                           <p className="text-[9px] uppercase tracking-[0.2em] text-black/40 sm:text-[10px]">
                             {product.category}
@@ -389,7 +377,6 @@ function ProductosContent() {
                             )}
                           </div>
                         </div>
-
                       </Link>
                     </motion.article>
                   ))}
@@ -400,7 +387,7 @@ function ProductosContent() {
         </div>
       </section>
 
-      {/* ── BANNER ─────────────────────────────────────────────────────── */}
+      {/* ── BANNER ── */}
       <section className="bg-[#f5f5f5] px-6 py-12 md:px-10 md:py-20">
         <div className="mx-auto max-w-7xl">
           <motion.div
