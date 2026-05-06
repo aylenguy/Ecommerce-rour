@@ -147,7 +147,9 @@ function ProductosContent() {
   const filtered = useMemo(() => {
     let list = [...allProducts];
     if (activeCategory !== "Todos") list = list.filter((p) => p.category === activeCategory);
-    if (onlyOffers) list = list.filter((p) => p.tag === "Sale!" || p.tag === "Oferta");
+    if (onlyOffers) list = list.filter((p) => 
+  p.tag?.toLowerCase() === "sale!" || p.tag?.toLowerCase() === "oferta"
+);
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(
@@ -158,10 +160,10 @@ function ProductosContent() {
     }
     if (sortBy === "price-asc") list.sort((a, b) => a.price - b.price);
     if (sortBy === "price-desc") list.sort((a, b) => b.price - a.price);
-    if (sortBy === "new")
-      list = list
-        .filter((p) => p.tag === "Nuevo")
-        .concat(list.filter((p) => p.tag !== "Nuevo"));
+   if (sortBy === "new")
+  list = list
+    .filter((p) => p.tag?.toLowerCase() === "nuevo")
+    .concat(list.filter((p) => p.tag?.toLowerCase() !== "nuevo"));
     return list;
   }, [allProducts, activeCategory, sortBy, onlyOffers, search]);
 
